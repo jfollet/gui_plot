@@ -4,9 +4,9 @@ from tkinter import messagebox as mBox
 from tkinter import filedialog as fdlg
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
+from mpl_toolkits.basemap import Basemap
 
-
-class PlotGui():
+class PlotGui:
 
     filelist = []
 
@@ -47,8 +47,13 @@ class PlotGui():
         canvas = FigureCanvasTkAgg(f, self.win)
         canvas.show()
         canvas.get_tk_widget().grid(row=0, column=1, sticky="NSEW", padx=5, pady=5)
-
         # canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+        m = Basemap(width=7500000,height=4000000,projection='lcc',
+            resolution='c',lat_1=25.,lat_2=35,lat_0=40,lon_0=-100., ax=self.a)
+        m.shadedrelief()
+        m.drawcoastlines()
+        m.drawcountries()
+        m.drawstates()
 
     def getListboxSelection(self, event):
         items = list(map(int, self.listbox.curselection()))
@@ -65,8 +70,22 @@ class PlotGui():
         if filename:
             self.filelist.append(filename)
 
+
+    def animate(i):
+        pass
+
+
+
 if __name__ == '__main__':
     app = PlotGui()
-    app.win.geometry("1280x720")
+    # app.win.geometry("1280x720")
     app.win.mainloop()
 
+# TODO - 1.  animate with loop and read the dataframe load data classes.
+# 2.  Fileloader will read database, write to file, animate will check file
+# 3.  database loader will read a database from external connection - AWS?  Just localhost?
+# 4.  Selector will show or unshow the callsign.
+# 5.  put a callsign datalabel on latest data point
+# 6.  Pretty up the axes
+# 7.  Write some unit tests
+# 8.  Make a map of the US
