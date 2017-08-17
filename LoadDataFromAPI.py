@@ -14,12 +14,6 @@ class LoadDataFromApi(AbstractLoadDataClass):
     def read_source(self):
         api = OpenSkyApi()
         states = api.get_states()
-        # origin_country = self._convert_state_api('origin_country', states.states)
-        #
-        # callsign = self._convert_state_api('callsign', states.states)
-        # longitude = self._convert_state_api('longitude', states.states)
-        # latitude = self._convert_state_api('latitude', states.states)
-        # altitude = self._convert_state_api('altitude', states.states)
         df = pd.DataFrame.from_items([
             ('origin_country', self._convert_state_api('origin_country', states.states)),
             ('callsign', self._convert_state_api('callsign', states.states)),

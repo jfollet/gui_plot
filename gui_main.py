@@ -5,6 +5,7 @@ from tkinter import filedialog as fdlg
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from mpl_toolkits.basemap import Basemap
+import FileLoaderChooser
 
 class PlotGui:
 
@@ -16,20 +17,38 @@ class PlotGui:
         self.createMenu()
         self.createListbox()
         self.createPlotCanvas()
+        # self.plotMap()
+        self.plotData()
+
+
+
 
     def createMenu(self):
         menuBar = tk.Menu()
+        self.win.config(menu=menuBar)
+
         filemenu = tk.Menu(menuBar, tearoff=0)
-        filemenu.add_command(label="Load data set", command=lambda: self.getFilename())
+        # filemenu.add_command(label="Load data set", command=lambda: self.getFilename())
+        fileFromMenu = tk.Menu(menuBar, tearoff=0)
+        filemenu.add_cascade(label="Load data from ", menu=fileFromMenu)
+        fileFromMenu.add_command(label='Files...', command=lambda: self.dataTypeChooser('file'))
+        fileFromMenu.add_command(label='API...', command=lambda: self.dataTypeChooser('api'))
+        fileFromMenu.add_command(label='Database...', command=lambda: self.dataTypeChooser('database'))
         filemenu.add_command(label="Save data set", command=lambda: self.popupmsg(msg="Not supported yet!"))
         filemenu.add_separator()
         filemenu.add_command(label="Exit", command=quit)
         menuBar.add_cascade(label="File", menu=filemenu)
+
+
         helpMenu = tk.Menu(menuBar, tearoff=0)
         helpMenu.add_command(label="About", command=lambda: self.popupmsg("About the Application", "Programmed by Jesse I. Follet\nFor Python 300 course"))
         menuBar.add_cascade(label="Help", menu=helpMenu)
 
-        self.win.config(menu=menuBar)
+    def dataTypeChooser(self, choice):
+        self.data = FileLoaderChooser.FileLoaderChooser(choice)
+        print(self.data)
+        self.setListbox()
+
 
     def createListbox(self):
         "Create a listbox that will list and allow multiple selection of data sets"
@@ -38,8 +57,15 @@ class PlotGui:
         listbox.bind('<ButtonRelease-1>', self.getListboxSelection)
         self.listbox = listbox
         # for testing - remove when done
-        for item in ["one", "two", "three", "four"]:
-            listbox.insert(tk.END, item)
+        # for item in ["one", "two", "three", "four"]:
+        #     listbox.insert(tk.END, item)
+
+    def setListbox(self):
+        print(self.data[0])
+        callsigns = self.data[0]['callsign']
+        print(callsigns)
+        for item in callsigns:
+            self.listbox.insert(tk.END, item)
 
     def createPlotCanvas(self):
         f = Figure()
@@ -48,12 +74,18 @@ class PlotGui:
         canvas.show()
         canvas.get_tk_widget().grid(row=0, column=1, sticky="NSEW", padx=5, pady=5)
         # canvas._tkcanvas.pack(side=tk.TOP, fill=tk.BOTH, expand=True)
+
+    def plotMap(self):
         m = Basemap(width=7500000,height=4000000,projection='lcc',
             resolution='c',lat_1=25.,lat_2=35,lat_0=40,lon_0=-100., ax=self.a)
         m.shadedrelief()
         m.drawcoastlines()
         m.drawcountries()
         m.drawstates()
+
+
+    def plotData(self):
+        pass
 
     def getListboxSelection(self, event):
         items = list(map(int, self.listbox.curselection()))
@@ -63,16 +95,9 @@ class PlotGui:
         "Generic popup message method for callback specifically"
         mBox.showinfo(title=title, message=msg)
 
-    def getFilename(self):
-        "Open dialog box, select and store filename into a global list"
-        print(self.filelist)
-        filename = fdlg.askopenfilename() # returns empty if canceled
-        if filename:
-            self.filelist.append(filename)
-
-
     def animate(i):
         pass
+
 
 
 

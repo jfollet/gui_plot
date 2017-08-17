@@ -4,12 +4,12 @@ from AbstractLoadDataClass import AbstractLoadDataClass
 
 
 class LoadDataFromFile(AbstractLoadDataClass):
+    """ Reads the stored pickle files that contain a dateframe of a airplane data tables """
 
     def __init__(self, filename):
-        super(self, filename)
+        super().__init__(filename)
 
     def read_source(self):
-        # data = pd.read_csv(self.source)
-        pd.read_
-        print(self.source)
-        return
+        return pd.read_pickle(self.source)
+
+
