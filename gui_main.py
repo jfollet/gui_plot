@@ -1,5 +1,5 @@
 import tkinter as tk
-from tkinter import ttk
+from tkinter import *
 from tkinter import messagebox as mBox
 from tkinter import filedialog as fdlg
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -52,13 +52,15 @@ class PlotGui:
 
     def createListbox(self):
         "Create a listbox that will list and allow multiple selection of data sets"
-        listbox = tk.Listbox(self.win, selectmode=tk.EXTENDED)
-        listbox.grid(row=0, sticky="NSEW", padx=5, pady=5)
+        frame = Frame(self.win, bd=2, relief=SUNKEN)
+        scrollbar = Scrollbar(frame)
+        scrollbar.pack(side=RIGHT, fill=Y)
+        listbox = Listbox(frame, selectmode=EXTENDED, bd=0, yscrollcommand=scrollbar.set)
         listbox.bind('<ButtonRelease-1>', self.getListboxSelection)
+        scrollbar.config(command=listbox.yview)
+        listbox.pack(side=LEFT, fill=BOTH, expand=1)
+        frame.grid(row=0, sticky="NSEW", padx=5, pady=5)
         self.listbox = listbox
-        # for testing - remove when done
-        # for item in ["one", "two", "three", "four"]:
-        #     listbox.insert(tk.END, item)
 
     def setListbox(self):
         print(self.data[0])
@@ -94,6 +96,9 @@ class PlotGui:
     def popupmsg(self, title='!', msg=''):
         "Generic popup message method for callback specifically"
         mBox.showinfo(title=title, message=msg)
+
+    def querydata(self, i):
+        self.data
 
     def animate(i):
         pass
