@@ -32,6 +32,6 @@ class LoadDataFromApi(AbstractLoadDataClass):
     def _convert_state_api(param, states):
         return list(map(attrgetter(param), states))
 
-if __name__ == '__main__':
-    dl = LoadDataFromApi('United States').read_source()
-    print(dl)
+# if __name__ == '__main__':
+#     dl = LoadDataFromApi('United States').read_source()
+#     print(dl)

@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import messagebox as mBox
 
+import math
 import numpy as np
 from matplotlib import animation
 from matplotlib import pyplot as plt
@@ -56,7 +57,13 @@ class PlotGui(Frame):
 
     def dataTypeChooser(self, choice):
         self.data = FileLoaderChooser.FileLoaderChooser(choice)
+        # todo - how to make self.data update and plot from api every second?
         self.setListbox(0)
+        self.start_animation()
+
+    def start_animation(self):
+        self.ani = animation.FuncAnimation(self.f, self.animate, np.arange(0, 101), interval=1000)
+        self.c.draw()
 
     def createListbox(self):
         "Create a listbox that will list and allow multiple selection of data sets"
@@ -79,12 +86,11 @@ class PlotGui(Frame):
     def getListboxSelection(self):
         # items = list(map(int, self.listbox.curselection()))
         # return items
+        callsign = []
         idx = self.listbox.curselection()
         if idx:
             callsign = self.listbox.get(idx[0])
-            return (idx[0], callsign)
-        else:
-            return ([], [])
+        return callsign
 
     def addCheckBoxes(self):
         self.var = BooleanVar(value=False)
@@ -137,23 +143,34 @@ class PlotGui(Frame):
     def plotData(self, i):
         long_lat = self.querydata(i)
         if long_lat is not None and self.pause_button['text'] == "Pause":
-            select = self.getListboxSelection()
-            # x = long_lat[select,0]
-            # y = long_lat[select,1]
             x = long_lat[:, 0]
             y = long_lat[:, 1]
             s = np.ones(len(long_lat)).tolist()
             rgb = plt.get_cmap('hsv')(np.linspace(0, 1, len(long_lat)))
-            lines = self.m.scatter(x, y, color=rgb, s=1.0)
-            ids, callsign = self.getListboxSelection()
-            x_cs = x[ids]
-            y_cs = y[ids]
-            plt.text(x_cs, y_cs, callsign)
-            #  todo - why no working?!
-            # plt.annotate(callsign, xy=(x_cs, y_cs), xycoords='data',
-            #              xytext=(x_cs-1000, y_cs-1000), textcoords='data',
-            #              arrowprops=dict(arrowstyle="->")
-            #              )
+            self.m.scatter(x, y, color=rgb, s=1.0)
+            if hasattr(self, 'anno'):
+                self.anno.remove()
+                del self.anno
+            callsign = self.getListboxSelection()
+            if callsign:
+                callsigns = self.data[i]['callsign']
+                callsigns = callsigns.tolist()
+                if callsign in callsigns:
+                    ids = callsigns.index(callsign)
+                    x_cs = x[ids]
+                    y_cs = y[ids]
+                    altitude = self.data[i]['altitude']
+                    altitude = altitude.tolist()
+                    # self.a.text(x_cs, y_cs, callsign, fontsize=24)
+                    # self.a.text(0.5, 0.5, callsign)
+                    self.anno = self.a.annotate(
+                        ''.join([callsign.strip(), '\n', 'FL', str((int(math.floor(altitude[ids] * 3.28084)/100)))]),
+                                 xy=(x_cs, y_cs), xycoords='data',
+                                 xytext=(x_cs + 100000, y_cs + 100000), textcoords='data',
+                                 arrowprops=dict(arrowstyle="->"),
+                                 bbox={'facecolor': 'yellow', 'alpha': 0.8, 'pad': 2},
+                                 fontsize=8
+                                 )
 
     def querydata(self, i):
         if self.data:
@@ -180,7 +197,7 @@ def main():
     root = Tk()
     root.geometry("1280x720")
     app = PlotGui()
-    ani = animation.FuncAnimation(app.f, app.animate, np.arange(0, 101), interval=1000)
+    # ani = animation.FuncAnimation(app.f, app.animate, np.arange(0, 101), interval=1000)
     app.mainloop()
 
     # self.win = tk.Tk()

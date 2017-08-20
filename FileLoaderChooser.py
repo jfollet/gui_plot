@@ -1,6 +1,10 @@
-from tkinter import filedialog as fdlg
-import LoadDataFromFile
 import os
+from tkinter import filedialog as fdlg
+
+import LoadDataFromAPI
+
+import LoadDataFromFile
+
 
 def FileLoaderChooser(choice):
     choices = {'file': file,
@@ -22,7 +26,8 @@ def file():
 
 
 def api():
-    return
+    dataconnect = LoadDataFromAPI.LoadDataFromApi('United States')
+    df = dataconnect.read_source()
 
 
 def database():
