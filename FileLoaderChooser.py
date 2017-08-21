@@ -16,6 +16,8 @@ def FileLoaderChooser(choice):
 def file():
     "Open dialog box, select and store filename into a global list"
     filenames = fdlg.askopenfilenames(filetypes=[("Python pickle", "*.pickle")])  # returns empty if canceled
+    if not filenames:
+        return 'Cancel'
     dirname = os.path.dirname(os.path.abspath(filenames[0]))
     data = []
     for i in range(len(filenames)):
@@ -26,9 +28,14 @@ def file():
 
 
 def api():
+    data = []
     dataconnect = LoadDataFromAPI.LoadDataFromApi('United States')
-    df = dataconnect.read_source()
+    data.append(dataconnect.read_source())
+    if not data:
+        data = []
+    return data
 
 
 def database():
-    return
+
+    return []

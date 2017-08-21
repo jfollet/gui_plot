@@ -8,6 +8,7 @@ from matplotlib import pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib.figure import Figure
 from mpl_toolkits.basemap import Basemap
+import time
 
 import FileLoaderChooser
 
@@ -44,7 +45,8 @@ class PlotGui(Frame):
         filemenu.add_cascade(label="Load data from ", menu=fileFromMenu)
         fileFromMenu.add_command(label='Files...', command=lambda: self.dataTypeChooser('file'))
         fileFromMenu.add_command(label='API...', command=lambda: self.dataTypeChooser('api'))
-        fileFromMenu.add_command(label='Database...', command=lambda: self.dataTypeChooser('database'))
+        # fileFromMenu.add_command(label='Database...', command=lambda: self.dataTypeChooser('database'))
+        fileFromMenu.add_command(label='Database...', command=lambda: self.popupmsg(msg="Not supported yet!"))
         filemenu.add_command(label="Save data set", command=lambda: self.popupmsg(msg="Not supported yet!"))
         filemenu.add_separator()
         filemenu.add_command(label="Exit", command=quit)
@@ -56,13 +58,21 @@ class PlotGui(Frame):
         menuBar.add_cascade(label="Help", menu=helpMenu)
 
     def dataTypeChooser(self, choice):
-        self.data = FileLoaderChooser.FileLoaderChooser(choice)
+        self.data = []
+        data = FileLoaderChooser.FileLoaderChooser(choice)
         # todo - how to make self.data update and plot from api every second?
+        if not data:
+            mBox.showerror("Load Error", "Error loading data")
+            return
+        elif data == 'Cancel':
+            return
+        self.data = data
         self.setListbox(0)
         self.start_animation()
 
     def start_animation(self):
-        self.ani = animation.FuncAnimation(self.f, self.animate, np.arange(0, 101), interval=1000)
+        # self.ani = animation.FuncAnimation(self.f, self.animateFile, np.arange(0, 101), interval=1000)
+        self.ani = animation.FuncAnimation(self.f, self.animateApi, interval=1000)
         self.c.draw()
 
     def createListbox(self):
@@ -148,6 +158,9 @@ class PlotGui(Frame):
             s = np.ones(len(long_lat)).tolist()
             rgb = plt.get_cmap('hsv')(np.linspace(0, 1, len(long_lat)))
             self.m.scatter(x, y, color=rgb, s=1.0)
+            t = self.data[0]['time'].iloc[0]
+            t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(t))
+            self.a.set_title(t)
             if hasattr(self, 'anno'):
                 self.anno.remove()
                 del self.anno
@@ -184,11 +197,15 @@ class PlotGui(Frame):
             long_lat = None
         return long_lat
 
-    def animate(self, i):
+    def animateFile(self, i):
         # self.querydata(i)
         self.plotData(i)
 
-    def popupmsg(self, title='!', msg=''):
+    def animateApi(self, i):
+        self.data = FileLoaderChooser.FileLoaderChooser('api')
+        self.plotData(0)
+
+    def popupmsg(self, title='OOPSY!', msg=''):
         "Generic popup message method for callback specifically"
         mBox.showinfo(title=title, message=msg)
 
@@ -197,7 +214,7 @@ def main():
     root = Tk()
     root.geometry("1280x720")
     app = PlotGui()
-    # ani = animation.FuncAnimation(app.f, app.animate, np.arange(0, 101), interval=1000)
+    # ani = animation.FuncAnimation(app.f, app.animateFile, np.arange(0, 101), interval=1000)
     app.mainloop()
 
     # self.win = tk.Tk()
@@ -206,8 +223,8 @@ def main():
 if __name__ == '__main__':
     main()
 
-# TODO - 1.  animate with loop and read the dataframe load data classes.
-# 2.  Fileloader will read database, write to file, animate will check file
+# TODO - 1.  animateFile with loop and read the dataframe load data classes.
+# 2.  Fileloader will read database, write to file, animateFile will check file
 # 3.  database loader will read a database from external connection - AWS?  Just localhost?
 # 4.  Selector will show or unshow the callsign.
 # 5.  put a callsign datalabel on latest data point
