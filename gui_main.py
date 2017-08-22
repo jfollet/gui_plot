@@ -1,6 +1,8 @@
+import logging
 from tkinter import *
 from tkinter import messagebox as mBox
 
+logging.basicConfig(filename='debug.log', level=logging.DEBUG, format='%(asctime)s:%(levelname)s:%(message)s')
 import math
 import numpy as np
 from matplotlib import animation
@@ -21,6 +23,7 @@ class PlotGui(Frame):
 
     def initUI(self):
         # self.win = tk.Tk()
+        logging.debug('Launching UI')
         self.master.title("Data Plot Tool")
         self.master.iconbitmap(r'Cheezen-Web-2-Airplane.ico')
         self.pack(fill=BOTH, expand=True)
@@ -38,7 +41,6 @@ class PlotGui(Frame):
     def createMenu(self):
         menuBar = Menu()
         self.master.config(menu=menuBar)
-
         filemenu = Menu(menuBar, tearoff=0)
         # filemenu.add_command(label="Load data set", command=lambda: self.getFilename())
         fileFromMenu = Menu(menuBar, tearoff=0)
@@ -60,7 +62,7 @@ class PlotGui(Frame):
     def dataTypeChooser(self, choice):
         self.data = []
         data = FileLoaderChooser.FileLoaderChooser(choice)
-        # todo - how to make self.data update and plot from api every second?
+        logging.debug('Selected to load data by {}'.format(choice))
         if not data:
             mBox.showerror("Load Error", "Error loading data")
             return
@@ -68,11 +70,16 @@ class PlotGui(Frame):
             return
         self.data = data
         self.setListbox(0)
-        self.start_animation()
+        self.start_animation(choice)
 
-    def start_animation(self):
-        # self.ani = animation.FuncAnimation(self.f, self.animateFile, np.arange(0, 101), interval=1000)
-        self.ani = animation.FuncAnimation(self.f, self.animateApi, interval=1000)
+    def start_animation(self, choice):
+        logging.debug('Starting animations')
+        if choice == 'file':
+            self.ani = animation.FuncAnimation(self.f, self.animateFile, np.arange(0, 101), interval=5000)
+        elif choice == 'api':
+            self.ani = animation.FuncAnimation(self.f, self.animateApi, interval=1000)
+        elif choice == 'database':
+            pass
         self.c.draw()
 
     def createListbox(self):
@@ -114,6 +121,7 @@ class PlotGui(Frame):
         self.pause_button = hbtn
 
     def pause_callback(self):
+        logging.debug('Pausing data collection')
         hbtn = self.pause_button
         if hbtn['text'] == "Start":
             hbtn['text'] = "Pause"
@@ -121,6 +129,9 @@ class PlotGui(Frame):
             hbtn['text'] = "Start"
 
     def showMap(self):
+        if hasattr(self, 'anno'):
+            self.anno.remove()
+            del self.anno
         if self.var.get():
             self.plotMap(shader=True)
         else:
@@ -158,7 +169,7 @@ class PlotGui(Frame):
             s = np.ones(len(long_lat)).tolist()
             rgb = plt.get_cmap('hsv')(np.linspace(0, 1, len(long_lat)))
             self.m.scatter(x, y, color=rgb, s=1.0)
-            t = self.data[0]['time'].iloc[0]
+            t = self.data[i]['time'].iloc[0]
             t = time.strftime('%Y-%m-%d %H:%M:%S', time.localtime(t))
             self.a.set_title(t)
             if hasattr(self, 'anno'):
@@ -174,8 +185,6 @@ class PlotGui(Frame):
                     y_cs = y[ids]
                     altitude = self.data[i]['altitude']
                     altitude = altitude.tolist()
-                    # self.a.text(x_cs, y_cs, callsign, fontsize=24)
-                    # self.a.text(0.5, 0.5, callsign)
                     self.anno = self.a.annotate(
                         ''.join([callsign.strip(), '\n', 'FL', str((int(math.floor(altitude[ids] * 3.28084)/100)))]),
                                  xy=(x_cs, y_cs), xycoords='data',
@@ -186,6 +195,7 @@ class PlotGui(Frame):
                                  )
 
     def querydata(self, i):
+        logging.debug('Running Query')
         if self.data:
             longq = self.data[i]['longitude'].tolist()
             latq = self.data[i]['latitude'].tolist()

@@ -1,6 +1,6 @@
 import pandas as pd
 
-from AbstractLoadDataClass import AbstractLoadDataClass
+from loaddata import AbstractLoadDataClass
 
 
 class LoadDataFromFile(AbstractLoadDataClass):

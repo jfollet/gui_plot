@@ -96,8 +96,9 @@ ENV/
 
 # mkdocs documentation
 /site
+pdata/
 
 # mypy
 .mypy_cache/
 .idea/
-pdata/
+

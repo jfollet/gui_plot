@@ -1,9 +1,8 @@
-from LoadDataFromAPI import LoadDataFromApi
-import pandas as pd
 import os
 import pathlib
 import time
-import copy
+
+from loaddata.LoadDataFromApi import LoadDataFromApi
 
 dataconnect = LoadDataFromApi('United States')
 for i in range(101):
@@ -14,6 +13,7 @@ for i in range(101):
     # if i != 0:
     #     print(df, pd.read_pickle(path.joinpath('state_{}.pickle'.format(i-1))))
     df.to_pickle(filepath)
-    time.sleep(60)
+    print("file {} written!".format(filepath))
+    time.sleep(2*60)
 
 

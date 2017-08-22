@@ -4,7 +4,7 @@ import numpy as np
 import pandas as pd
 from opensky_api import OpenSkyApi
 
-from AbstractLoadDataClass import AbstractLoadDataClass
+from loaddata import AbstractLoadDataClass
 
 
 class LoadDataFromApi(AbstractLoadDataClass):

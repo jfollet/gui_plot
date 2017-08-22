@@ -1,9 +1,8 @@
 import os
 from tkinter import filedialog as fdlg
 
-import LoadDataFromAPI
-
-import LoadDataFromFile
+from loaddata import LoadDataFromApi
+from loaddata import LoadDataFromFile
 
 
 def FileLoaderChooser(choice):
@@ -22,14 +21,14 @@ def file():
     data = []
     for i in range(len(filenames)):
         filename = os.path.join(dirname, 'state_{}.pickle'.format(i))
-        fdata = LoadDataFromFile.LoadDataFromFile(filename)
+        fdata = LoadDataFromFile(filename)
         data.append(fdata.read_source())
     return data
 
 
 def api():
     data = []
-    dataconnect = LoadDataFromAPI.LoadDataFromApi('United States')
+    dataconnect = LoadDataFromApi('United States')
     data.append(dataconnect.read_source())
     if not data:
         data = []

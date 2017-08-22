@@ -1,4 +1,5 @@
-import AbstractLoadDataClass
+from loaddata import AbstractLoadDataClass
+
 
 class LoadDataFromDatabase(AbstractLoadDataClass):
 
