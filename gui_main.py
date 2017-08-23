@@ -14,6 +14,7 @@ import time
 
 import FileLoaderChooser
 
+"""The PlotGui loads and flight locations across the US. """
 
 class PlotGui(Frame):
     def __init__(self):
@@ -233,11 +234,3 @@ def main():
 if __name__ == '__main__':
     main()
 
-# TODO - 1.  animateFile with loop and read the dataframe load data classes.
-# 2.  Fileloader will read database, write to file, animateFile will check file
-# 3.  database loader will read a database from external connection - AWS?  Just localhost?
-# 4.  Selector will show or unshow the callsign.
-# 5.  put a callsign datalabel on latest data point
-# 6.  Pretty up the axes
-# 7.  Write some unit tests
-# 8.  Make a map of the US

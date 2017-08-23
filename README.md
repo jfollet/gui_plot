@@ -1,38 +1,31 @@
-# gui_plot
-My Python Certificate project.  Develop a GUI that loads a set of data (pandas?) and plots in same GUI window (matplotlib? bokeh? pandas?)
+# gui_plot application
+### My Python Certificate project.  
 
-Plan
+This Graphical Interface loads data from multiple types of sources to plot the locations
+and altitudes of flights across the US.  It used the OpenSky python API freely available at
+https://github.com/openskynetwork/opensky-api
 
-Need a class that reads data either from a file or from web or from server
-    1.  Abstract Class:
-    2.  Class:
-    3.  Test:
+It utilizes listbox, file menus, checkboxes, buttons, canvas and plot frames.
 
-Need a class data structure that stores the active data in memory or cache file
-    1.  Abstract Class:
-    2.  Class:
-    3.  Test:
-
-Need a class that manipulates data in the data above data class
-    1.  Abstract Class:
-    2.  Class:
-    3.  Test:
-
-Need a class that does data analysis
-    1.  Abstract Class:
-    2.  Class:
-    3.  Test:
-
-Need a GUI class
-    1.  Abstract Class:
-    2.  Class:
-    3.  Test:  How do you test a GUI?
-
-Need a plot tools class - maybe
-    1.  Abstract Class:
-    2.  Class:
-    3.  Test:  How do you test a GUI?
+###Special Python Packages used:
+1.  opensky-api - query data from the opensky
+2.  matplotlib - plotting and animation
+3.  tkinter - GUI and widgets
+4.  pandas - for storing data queried and filtered data into a Dataframe
+5.  basemap - load world map onto plot frame
+6.  numpy - arrays
+7.  abc - abstract method class
+8.  logging - handler for debugging
+9.  unittest - limited to 
 
 
-Track requirements file
-    1. python requirements.txt
+
+###Python Programming techniques used:
+1.  OOP Classes with Abstract class and inheritance.  
+2.  Decorators (@StaticMethod, @AbstractMethod)
+3.  Python packaging
+4.  Logging
+5.  List comprehension
+6.  Unit testing
+7.  dicts and lists and tuples
+8.  pickle
