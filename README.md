@@ -16,7 +16,7 @@ It utilizes listbox, file menus, checkboxes, buttons, canvas and plot frames.
 6.  numpy - arrays
 7.  abc - abstract method class
 8.  logging - handler for debugging
-9.  unittest - limited to 
+9.  unittest - limited to classes and function outsie of main gui
 
 
 
