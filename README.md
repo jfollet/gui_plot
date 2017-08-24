@@ -1,5 +1,5 @@
 # gui_plot application
-### My Python Certificate project.  
+### My Python project
 
 This Graphical Interface loads data from multiple types of sources to plot the locations
 and altitudes of flights across the US.  It used the OpenSky python API freely available at
