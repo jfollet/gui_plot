@@ -16,21 +16,26 @@ import FileLoaderChooser
 
 """The PlotGui loads and flight locations across the US. """
 
+
 class PlotGui(Frame):
+    """init for PlotGui"""
+
     def __init__(self):
         super().__init__()
         self.data = []
         self.initUI()
 
     def initUI(self):
-        # self.win = tk.Tk()
+        """ build the GUI components via methods"""
         logging.debug('Launching UI')
         self.master.title("Data Plot Tool")
         self.master.iconbitmap(r'Cheezen-Web-2-Airplane.ico')
         self.pack(fill=BOTH, expand=True)
+        # tkinter grid manager
         self.rowconfigure(0, weight=4)
         self.rowconfigure(1, weight=1)
         self.columnconfigure(1, weight=1)
+        # methods that add and set the components to tk Frame
         self.createMenu()
         self.createListbox()
         self.addCheckBoxes()
@@ -40,10 +45,11 @@ class PlotGui(Frame):
         self.plotData(0)
 
     def createMenu(self):
+
+        """ Create the menu bar and all the menu items with commands and callbacks """
         menuBar = Menu()
         self.master.config(menu=menuBar)
         filemenu = Menu(menuBar, tearoff=0)
-        # filemenu.add_command(label="Load data set", command=lambda: self.getFilename())
         fileFromMenu = Menu(menuBar, tearoff=0)
         filemenu.add_cascade(label="Load data from ", menu=fileFromMenu)
         fileFromMenu.add_command(label='Files...', command=lambda: self.dataTypeChooser('file'))
@@ -61,6 +67,7 @@ class PlotGui(Frame):
         menuBar.add_cascade(label="Help", menu=helpMenu)
 
     def dataTypeChooser(self, choice):
+        """ called from the file load menu and launches the type of data to be loaded """
         self.data = []
         data = FileLoaderChooser.FileLoaderChooser(choice)
         logging.debug('Selected to load data by {}'.format(choice))
@@ -74,6 +81,7 @@ class PlotGui(Frame):
         self.start_animation(choice)
 
     def start_animation(self, choice):
+        """  Start the animations for live updating of the flight track points """
         logging.debug('Starting animations')
         if choice == 'file':
             self.ani = animation.FuncAnimation(self.f, self.animateFile, np.arange(0, 101), interval=5000)
@@ -96,14 +104,14 @@ class PlotGui(Frame):
         self.listbox = listbox
 
     def setListbox(self, i):
+        """ Set the listbox data based on the data object list index"""
         callsigns = self.data[i]['callsign']
         for item in callsigns:
             if item not in self.listbox.get(0, END):
                 self.listbox.insert(END, item)
 
     def getListboxSelection(self):
-        # items = list(map(int, self.listbox.curselection()))
-        # return items
+        # returns the currently selected listbox item
         callsign = []
         idx = self.listbox.curselection()
         if idx:
@@ -111,17 +119,20 @@ class PlotGui(Frame):
         return callsign
 
     def addCheckBoxes(self):
+        """ Add checkbox(s)"""
         self.var = BooleanVar(value=False)
         checkbox = Checkbutton(self, text="Show Map", variable=self.var, command=self.showMap)
         checkbox.grid(row=1, sticky="NW", padx=5, pady=5)
 
     def addPauseButton(self):
+        """Add pause button to gui"""
         hbtn = Button(self, text="Pause")
         hbtn.config(command=self.pause_callback)
         hbtn.grid(row=1, sticky="SEW", padx=5, pady=5)
         self.pause_button = hbtn
 
     def pause_callback(self):
+        """Pauses the Callback"""
         logging.debug('Pausing data collection')
         hbtn = self.pause_button
         if hbtn['text'] == "Start":
@@ -130,6 +141,7 @@ class PlotGui(Frame):
             hbtn['text'] = "Start"
 
     def showMap(self):
+        """Shows the US Map on the canvas axis"""
         if hasattr(self, 'anno'):
             self.anno.remove()
             del self.anno
@@ -140,14 +152,14 @@ class PlotGui(Frame):
         self.plotData(0)
 
     def createPlotCanvas(self):
+        """Creates the plot canvas"""
         self.f = Figure()
         self.a = self.f.add_subplot(111)
         self.c = FigureCanvasTkAgg(self.f, self)
-        # self.c.show()
         self.c.get_tk_widget().grid(row=0, rowspan=2, column=1, sticky="NSEW", padx=5, pady=5)
-        # canvas._tkcanvas.pack(side=TOP, fill=BOTH, expand=True)
 
     def plotMap(self, shader=False):
+        """Plot the map on the map axis"""
         self.a.cla()
         m = Basemap(width=7500000, height=4000000, projection='lcc',
                     resolution='c', lat_1=25., lat_2=35, lat_0=40, lon_0=-100., ax=self.a)
@@ -163,6 +175,7 @@ class PlotGui(Frame):
         self.m = m
 
     def plotData(self, i):
+        """Plot the flight data on to the map axis"""
         long_lat = self.querydata(i)
         if long_lat is not None and self.pause_button['text'] == "Pause":
             x = long_lat[:, 0]
@@ -187,15 +200,16 @@ class PlotGui(Frame):
                     altitude = self.data[i]['altitude']
                     altitude = altitude.tolist()
                     self.anno = self.a.annotate(
-                        ''.join([callsign.strip(), '\n', 'FL', str((int(math.floor(altitude[ids] * 3.28084)/100)))]),
-                                 xy=(x_cs, y_cs), xycoords='data',
-                                 xytext=(x_cs + 100000, y_cs + 100000), textcoords='data',
-                                 arrowprops=dict(arrowstyle="->"),
-                                 bbox={'facecolor': 'yellow', 'alpha': 0.8, 'pad': 2},
-                                 fontsize=8
-                                 )
+                        ''.join([callsign.strip(), '\n', 'FL', str((int(math.floor(altitude[ids] * 3.28084) / 100)))]),
+                        xy=(x_cs, y_cs), xycoords='data',
+                        xytext=(x_cs + 100000, y_cs + 100000), textcoords='data',
+                        arrowprops=dict(arrowstyle="->"),
+                        bbox={'facecolor': 'yellow', 'alpha': 0.8, 'pad': 2},
+                        fontsize=8
+                    )
 
     def querydata(self, i):
+        """grab the data from the Dataframe to send to plot"""
         logging.debug('Running Query')
         if self.data:
             longq = self.data[i]['longitude'].tolist()
@@ -209,10 +223,12 @@ class PlotGui(Frame):
         return long_lat
 
     def animateFile(self, i):
+        """Animation callback for file load"""
         # self.querydata(i)
         self.plotData(i)
 
     def animateApi(self, i):
+        """Animation callback for Opensky API load"""
         self.data = FileLoaderChooser.FileLoaderChooser('api')
         self.plotData(0)
 
@@ -225,12 +241,8 @@ def main():
     root = Tk()
     root.geometry("1280x720")
     app = PlotGui()
-    # ani = animation.FuncAnimation(app.f, app.animateFile, np.arange(0, 101), interval=1000)
     app.mainloop()
-
-    # self.win = tk.Tk()
 
 
 if __name__ == '__main__':
     main()
-

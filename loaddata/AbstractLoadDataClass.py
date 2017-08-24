@@ -11,6 +11,5 @@ class AbstractLoadDataClass:
 
     @abstractmethod
     def read_source(self):
-        "Returns a pandas dataframe with callsign, longitude, latitude, altitude and country"
+        """Returns a pandas dataframe with time, callsign, longitude, latitude, altitude and country"""
         return
-
